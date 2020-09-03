@@ -1,11 +1,12 @@
-import requests
-import sys
-import re
-import itertools
 
 # Code to solve lab in WSA - 'Blind OS command injection with out-of-band interaction'
 # See: https://portswigger.net/web-security/os-command-injection/lab-blind-out-of-band
 # Run command: python3 blind_OAST_poster.py $form_url email nslookup burpcollaborator.net
+
+import requests
+import sys
+import re
+import itertools
 
 # First get web page for csrf_token, then inject the code through a post request
 def poster(form_url, attack_field, command, prefix, suffix):
